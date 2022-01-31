@@ -23,6 +23,7 @@ func main() {
 
 	r.HandleFunc("/todos", routes.CreateTodo).Methods("POST")
 	r.HandleFunc("/todos", routes.GetTodos).Methods("GET")
+	r.HandleFunc("/todos/{id}", routes.GetTodoById).Methods("GET")
 	r.HandleFunc("/todos", routes.UpdateTodo).Methods("PUT")
 	r.HandleFunc("/todos", routes.DeleteTodo).Methods("DELETE")
 

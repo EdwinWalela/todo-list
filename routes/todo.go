@@ -43,6 +43,22 @@ func GetTodos(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(res)
 }
 
+func GetTodoById(w http.ResponseWriter, r *http.Request) {
+
+	// retrieve request params
+	// vars := mux.Vars(r)
+
+	// todoId := vars["id"]
+
+	res := &Todo{
+		Title:      "Ride bike",
+		Timestamp:  time.Now().Unix(),
+		IsComplete: false,
+	}
+
+	json.NewEncoder(w).Encode(res)
+}
+
 func CreateTodo(w http.ResponseWriter, r *http.Request) {
 	var todo Todo
 
