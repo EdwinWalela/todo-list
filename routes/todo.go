@@ -18,6 +18,10 @@ type Todo struct {
 	IsComplete bool   `json:"isComplete"`
 }
 
+type InsertResponse struct {
+	Id interface{} `json:"id"`
+}
+
 type TodosResponse struct {
 	Todos []Todo `json:"todos"`
 }
@@ -26,7 +30,7 @@ var mongoConn *mongo.Client = mongoDriver.Connect()
 
 func GetTodos(w http.ResponseWriter, r *http.Request) {
 
-	todoCollection := mongoDriver.GetCollection(mongoConn, "todo")
+	todoCollection := mongoDriver.GetCollection(mongoConn, "todos")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 
 	defer cancel()
@@ -81,6 +85,29 @@ func CreateTodo(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&todo); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+
+	defer cancel()
+
+	todoCollection := mongoDriver.GetCollection(mongoConn, "todos")
+	res, err := todoCollection.InsertOne(ctx, bson.D{
+		{"title", todo.Title},
+		{"timestamp", todo.Timestamp},
+		{"isComplete", false},
+	})
+
+	if err != nil {
+		log.Println("Unable to create new item")
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+
+	insertRes := &InsertResponse{
+		Id: res.InsertedID,
+	}
+
+	json.NewEncoder(w).Encode(insertRes)
 
 }
 
