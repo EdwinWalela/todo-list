@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -11,13 +12,21 @@ import (
 	"crafted.api/routes"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/mongo"
 )
+
+type DB struct {
+	Ctx            *context.Context
+	TodoCollection *mongo.Collection
+}
 
 func main() {
 	godotenv.Load()
 	PORT, _ := strconv.Atoi(os.Getenv("PORT"))
 
 	URL := fmt.Sprintf("0.0.0.0:%d", PORT)
+
+	// Setup Mux router
 
 	r := mux.NewRouter()
 
