@@ -8,6 +8,7 @@ import (
 	"time"
 
 	mongoDriver "crafted.api/config"
+	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -66,17 +67,30 @@ func GetTodos(w http.ResponseWriter, r *http.Request) {
 func GetTodoById(w http.ResponseWriter, r *http.Request) {
 
 	// retrieve request params
-	// vars := mux.Vars(r)
+	vars := mux.Vars(r)
 
-	// todoId := vars["id"]
+	todoId := vars["id"]
 
-	res := &Todo{
-		Title:      "Ride bike",
-		Timestamp:  time.Now().Unix(),
-		IsComplete: false,
+	todoCollection := mongoDriver.GetCollection(mongoConn, "todos")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+
+	defer cancel()
+
+	var todo Todo
+
+	err := todoCollection.FindOne(ctx, bson.D{{"id", todoId}}).Decode(&todo)
+
+	if err == mongo.ErrNoDocuments {
+		log.Println("record does not exist")
+		http.Error(w, "record does not exist", http.StatusNotFound)
+		return
+	} else if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
-	json.NewEncoder(w).Encode(res)
+	json.NewEncoder(w).Encode(todo)
 }
 
 func CreateTodo(w http.ResponseWriter, r *http.Request) {
