@@ -71,7 +71,13 @@ func GetTodoById(w http.ResponseWriter, r *http.Request) {
 	// retrieve request params
 	vars := mux.Vars(r)
 
-	todoId := vars["id"]
+	todoId, err := primitive.ObjectIDFromHex(vars["id"])
+
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	todoCollection := mongoDriver.GetCollection(mongoConn, "todos")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
@@ -80,15 +86,17 @@ func GetTodoById(w http.ResponseWriter, r *http.Request) {
 
 	var todo Todo
 
-	err := todoCollection.FindOne(ctx, bson.D{{"id", todoId}}).Decode(&todo)
+	filter := bson.M{"_id": todoId}
 
-	if err == mongo.ErrNoDocuments {
+	findErr := todoCollection.FindOne(ctx, filter).Decode(&todo)
+
+	if findErr == mongo.ErrNoDocuments {
 		log.Println("record does not exist")
 		http.Error(w, "record does not exist", http.StatusNotFound)
 		return
-	} else if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	} else if findErr != nil {
+		log.Println(findErr)
+		http.Error(w, findErr.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -124,13 +132,10 @@ func CreateTodo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(insertRes)
-
 }
 
 func UpdateTodo(w http.ResponseWriter, r *http.Request) {
-
 }
 
 func DeleteTodo(w http.ResponseWriter, r *http.Request) {
-
 }
