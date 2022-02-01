@@ -33,12 +33,35 @@ var mongoConn *mongo.Client = mongoDriver.Connect()
 
 func GetTodos(w http.ResponseWriter, r *http.Request) {
 
+	statusQuery := r.URL.Query().Get("status")
+
+	filter := false
+	getCompleted := false
+
+	if statusQuery == "0" {
+		filter = true
+
+	} else if statusQuery == "1" {
+		filter = true
+		getCompleted = true
+	}
+
 	todoCollection := mongoDriver.GetCollection(mongoConn, "todos")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 
 	defer cancel()
 
-	cur, err := todoCollection.Find(ctx, bson.D{})
+	findCondition := bson.M{}
+
+	if filter {
+		if getCompleted {
+			findCondition = bson.M{"isComplete": true}
+		} else {
+			findCondition = bson.M{"isComplete": false}
+		}
+	}
+
+	cur, err := todoCollection.Find(ctx, findCondition)
 
 	defer cur.Close(ctx)
 
