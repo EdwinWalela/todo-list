@@ -10,13 +10,15 @@ import (
 	mongoDriver "crafted.api/config"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Todo struct {
-	Title      string `json:"title"`
-	Timestamp  int64  `json:"timestamp"`
-	IsComplete bool   `json:"isComplete"`
+	Id         primitive.ObjectID `json:"_id" bson:"_id"`
+	Title      string             `json:"title" bson:"title"`
+	Timestamp  int64              `json:"timestamp" bson:"timestamp"`
+	IsComplete bool               `json:"isComplete" bson:"isComplete"`
 }
 
 type InsertResponse struct {
