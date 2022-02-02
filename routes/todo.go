@@ -9,6 +9,7 @@ import (
 
 	db "crafted.api/config"
 	"crafted.api/models"
+	"github.com/golang-jwt/jwt"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -122,10 +123,38 @@ func GetTodoById(w http.ResponseWriter, r *http.Request) {
 func CreateTodo(w http.ResponseWriter, r *http.Request) {
 	var todo models.Todo
 
+	headerToken := r.Header.Get("Auth")
+
+	if len(headerToken) == 0 {
+		log.Println("Token missing")
+		http.Error(w, "Token missing", http.StatusBadRequest)
+		return
+	}
+
 	if err := json.NewDecoder(r.Body).Decode(&todo); err != nil {
 		log.Println("Unable to decode body")
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Extract & decode token
+	token, err := jwt.Parse(headerToken, func(token *jwt.Token) (interface{}, error) {
+		return secret, nil
+	})
+
+	if err != nil {
+		log.Println("Unable to decode token")
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+
+	if !ok || !token.Valid {
+		log.Println("Token invalid")
+		http.Error(w, "Token invalid", http.StatusBadRequest)
 		return
 	}
 
@@ -138,6 +167,7 @@ func CreateTodo(w http.ResponseWriter, r *http.Request) {
 		{"title", todo.Title},
 		{"timestamp", todo.Timestamp},
 		{"isComplete", false},
+		{"user_id:", claims["id"]},
 	})
 
 	if err != nil {

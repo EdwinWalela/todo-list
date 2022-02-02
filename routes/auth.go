@@ -53,6 +53,7 @@ func genToken(user *models.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"email":    user.Email,
 		"is_admin": user.Is_admin,
+		"id":       user.Id,
 		"nbf":      time.Date(2022, 2, 1, 12, 9, 9, 9, time.UTC).Unix(),
 	})
 
@@ -91,6 +92,8 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Incorrect combination", http.StatusForbidden)
 		return
 	}
+
+	// Generate token
 
 	token, err := genToken(&user)
 
