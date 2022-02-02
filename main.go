@@ -37,6 +37,7 @@ func main() {
 	r.HandleFunc("/todos", routes.UpdateTodo).Methods("PUT")
 	r.HandleFunc("/todos/{id}", routes.DeleteTodo).Methods("DELETE")
 	r.HandleFunc("/auth/register", routes.HandleRegister).Methods("POST")
+	r.HandleFunc("/auth/login", routes.HandleLogin).Methods("POST")
 
 	srv := &http.Server{
 		Addr:         URL,
