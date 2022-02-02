@@ -32,7 +32,6 @@ type TodosResponse struct {
 var mongoConn *mongo.Client = mongoDriver.Connect()
 
 func GetTodos(w http.ResponseWriter, r *http.Request) {
-
 	statusQuery := r.URL.Query().Get("status")
 
 	filter := false
@@ -130,7 +129,10 @@ func CreateTodo(w http.ResponseWriter, r *http.Request) {
 	var todo Todo
 
 	if err := json.NewDecoder(r.Body).Decode(&todo); err != nil {
+		log.Println("Unable to decode body")
+		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
@@ -158,7 +160,68 @@ func CreateTodo(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateTodo(w http.ResponseWriter, r *http.Request) {
+	var todo Todo
+
+	if err := json.NewDecoder(r.Body).Decode(&todo); err != nil {
+		log.Println("Unable to decode body")
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	todoCollection := mongoDriver.GetCollection(mongoConn, "todos")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+
+	defer cancel()
+
+	filter := bson.M{"_id": todo.Id}
+
+	update := bson.M{
+		"$set": bson.M{
+			"title":      todo.Title,
+			"isComplete": todo.IsComplete},
+	}
+
+	updateRes := todoCollection.FindOneAndUpdate(ctx, filter, update)
+
+	if updateRes.Err() != nil {
+		log.Println(updateRes.Err().Error())
+		http.Error(w, updateRes.Err().Error(), http.StatusBadRequest)
+		return
+	}
+
+	json.NewEncoder(w).Encode("Document updated")
 }
 
 func DeleteTodo(w http.ResponseWriter, r *http.Request) {
+	// retrieve request params
+	vars := mux.Vars(r)
+
+	todoId, err := primitive.ObjectIDFromHex(vars["id"])
+
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	todosCollection := mongoDriver.GetCollection(mongoConn, "todos")
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	filter := bson.M{
+		"_id": todoId,
+	}
+
+	delRes := todosCollection.FindOneAndDelete(ctx, filter)
+
+	if delRes.Err() != nil {
+		log.Println("Unable to delete item")
+		log.Println(delRes.Err().Error())
+		http.Error(w, delRes.Err().Error(), http.StatusBadRequest)
+		return
+	}
+
+	json.NewEncoder(w).Encode("Item deleted")
 }

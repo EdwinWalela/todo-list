@@ -25,7 +25,6 @@ func main() {
 	PORT, _ := strconv.Atoi(os.Getenv("PORT"))
 
 	URL := fmt.Sprintf("0.0.0.0:%d", PORT)
-
 	// Setup Mux router
 
 	r := mux.NewRouter()
@@ -35,7 +34,7 @@ func main() {
 	r.HandleFunc("/todos", routes.GetTodos).Methods("GET").Queries("status", "{status}")
 	r.HandleFunc("/todos/{id}", routes.GetTodoById).Methods("GET")
 	r.HandleFunc("/todos", routes.UpdateTodo).Methods("PUT")
-	r.HandleFunc("/todos", routes.DeleteTodo).Methods("DELETE")
+	r.HandleFunc("/todos/{id}", routes.DeleteTodo).Methods("DELETE")
 
 	srv := &http.Server{
 		Addr:         URL,
