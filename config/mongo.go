@@ -1,4 +1,4 @@
-package mongoDriver
+package db
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func Connect() *mongo.Client {
+func ConnectMongo() *mongo.Client {
 	godotenv.Load()
 	MONGO_URL := os.Getenv("MONGO_DB_URL")
 

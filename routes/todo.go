@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	mongoDriver "crafted.api/config"
+	db "crafted.api/config"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -19,6 +19,7 @@ type Todo struct {
 	Title      string             `json:"title" bson:"title"`
 	Timestamp  int64              `json:"timestamp" bson:"timestamp"`
 	IsComplete bool               `json:"isComplete" bson:"isComplete"`
+	UserId     int64              `json:"userId" bson:"userId"`
 }
 
 type InsertResponse struct {
@@ -29,7 +30,7 @@ type TodosResponse struct {
 	Todos []Todo `json:"todos"`
 }
 
-var mongoConn *mongo.Client = mongoDriver.Connect()
+var mongoConn *mongo.Client = db.ConnectMongo()
 
 func GetTodos(w http.ResponseWriter, r *http.Request) {
 	statusQuery := r.URL.Query().Get("status")
@@ -45,7 +46,7 @@ func GetTodos(w http.ResponseWriter, r *http.Request) {
 		getCompleted = true
 	}
 
-	todoCollection := mongoDriver.GetCollection(mongoConn, "todos")
+	todoCollection := db.GetCollection(mongoConn, "todos")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 
 	defer cancel()
@@ -101,7 +102,7 @@ func GetTodoById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	todoCollection := mongoDriver.GetCollection(mongoConn, "todos")
+	todoCollection := db.GetCollection(mongoConn, "todos")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 
 	defer cancel()
@@ -139,7 +140,7 @@ func CreateTodo(w http.ResponseWriter, r *http.Request) {
 
 	defer cancel()
 
-	todoCollection := mongoDriver.GetCollection(mongoConn, "todos")
+	todoCollection := db.GetCollection(mongoConn, "todos")
 	res, err := todoCollection.InsertOne(ctx, bson.D{
 		{"title", todo.Title},
 		{"timestamp", todo.Timestamp},
@@ -169,7 +170,7 @@ func UpdateTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	todoCollection := mongoDriver.GetCollection(mongoConn, "todos")
+	todoCollection := db.GetCollection(mongoConn, "todos")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 
 	defer cancel()
@@ -205,7 +206,7 @@ func DeleteTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	todosCollection := mongoDriver.GetCollection(mongoConn, "todos")
+	todosCollection := db.GetCollection(mongoConn, "todos")
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
