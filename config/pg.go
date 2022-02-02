@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"crafted.api/models"
 	"github.com/jackc/pgx/v4"
 	"github.com/joho/godotenv"
 )
@@ -22,10 +23,10 @@ func ConnectPG() *pgx.Conn {
 	return conn
 }
 
-func Execute(smt string) {
+func CreateUser(conn *pgx.Conn, user *models.User) (int64, error) {
 
-}
+	res, err := conn.Exec(context.Background(), "INSERT into users (email,password,is_admin) VALUES($1,$2,$3)", user.Email, user.Password, user.IsAdmin)
 
-func Query(smt string) {
+	return res.RowsAffected(), err
 
 }
