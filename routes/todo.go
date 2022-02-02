@@ -8,26 +8,19 @@ import (
 	"time"
 
 	db "crafted.api/config"
+	"crafted.api/models"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type Todo struct {
-	Id         primitive.ObjectID `json:"_id" bson:"_id"`
-	Title      string             `json:"title" bson:"title"`
-	Timestamp  int64              `json:"timestamp" bson:"timestamp"`
-	IsComplete bool               `json:"isComplete" bson:"isComplete"`
-	UserId     int64              `json:"userId" bson:"userId"`
-}
-
 type InsertResponse struct {
 	Id interface{} `json:"id"`
 }
 
 type TodosResponse struct {
-	Todos []Todo `json:"todos"`
+	Todos []models.Todo `json:"todos"`
 }
 
 var mongoConn *mongo.Client = db.ConnectMongo()
@@ -70,10 +63,10 @@ func GetTodos(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 
-	var todos = []Todo{}
+	var todos = []models.Todo{}
 
 	for cur.Next(ctx) {
-		var todo Todo
+		var todo models.Todo
 		if err := cur.Decode(&todo); err != nil {
 			log.Println("unable to decode item")
 			log.Println(err)
@@ -107,7 +100,7 @@ func GetTodoById(w http.ResponseWriter, r *http.Request) {
 
 	defer cancel()
 
-	var todo Todo
+	var todo models.Todo
 
 	filter := bson.M{"_id": todoId}
 
@@ -127,7 +120,7 @@ func GetTodoById(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateTodo(w http.ResponseWriter, r *http.Request) {
-	var todo Todo
+	var todo models.Todo
 
 	if err := json.NewDecoder(r.Body).Decode(&todo); err != nil {
 		log.Println("Unable to decode body")
@@ -161,7 +154,7 @@ func CreateTodo(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateTodo(w http.ResponseWriter, r *http.Request) {
-	var todo Todo
+	var todo models.Todo
 
 	if err := json.NewDecoder(r.Body).Decode(&todo); err != nil {
 		log.Println("Unable to decode body")
