@@ -36,7 +36,7 @@ func AuthenticateUser(conn *pgx.Conn, user *models.User) (bool, error) {
 	var email string
 	var password string
 
-	err := conn.QueryRow(context.Background(), "SELECT email,password,User_id from users where email=$1", user.Email).Scan(&email, &password, &user.Id)
+	err := conn.QueryRow(context.Background(), "SELECT email,password,User_id,Is_admin from users where email=$1", user.Email).Scan(&email, &password, &user.Id, &user.Is_admin)
 
 	if err != nil {
 		return false, err

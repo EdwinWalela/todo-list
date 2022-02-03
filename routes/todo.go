@@ -27,10 +27,44 @@ type TodosResponse struct {
 var mongoConn *mongo.Client = db.ConnectMongo()
 
 func GetTodos(w http.ResponseWriter, r *http.Request) {
+
+	headerToken := r.Header.Get("Auth")
+
+	if len(headerToken) == 0 {
+		log.Println("Token missing")
+		http.Error(w, "Token missing", http.StatusBadRequest)
+		return
+	}
+
+	// Extract & decode token
+	token, err := jwt.Parse(headerToken, func(token *jwt.Token) (interface{}, error) {
+		return secret, nil
+	})
+
+	if err != nil {
+		log.Println("Unable to decode token")
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+
+	if !ok || !token.Valid {
+		log.Println("Token invalid")
+		http.Error(w, "Token invalid", http.StatusBadRequest)
+		return
+	}
+
 	statusQuery := r.URL.Query().Get("status")
+
+	findCondition := bson.M{}
 
 	filter := false
 	getCompleted := false
+
+	isAdmin := int(claims["is_admin"].(float64)) == 1
+	userId := claims["id"]
 
 	if statusQuery == "0" {
 		filter = true
@@ -45,13 +79,32 @@ func GetTodos(w http.ResponseWriter, r *http.Request) {
 
 	defer cancel()
 
-	findCondition := bson.M{}
-
 	if filter {
-		if getCompleted {
-			findCondition = bson.M{"isComplete": true}
-		} else {
-			findCondition = bson.M{"isComplete": false}
+		if getCompleted { // get completed items
+			if !isAdmin {
+				findCondition = bson.M{
+					"isComplete": true,
+					"user_id":    userId,
+				}
+			} else {
+				findCondition = bson.M{
+					"isComplete": true,
+				}
+			}
+		} else { // get inot completed items
+			if !isAdmin {
+				findCondition = bson.M{
+					"isComplete": false,
+					"user_id":    userId,
+				}
+			} else {
+				findCondition = bson.M{"isComplete": false}
+			}
+
+		}
+	} else {
+		if !isAdmin {
+			findCondition = bson.M{"user_id": userId}
 		}
 	}
 
