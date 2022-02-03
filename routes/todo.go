@@ -316,6 +316,42 @@ func DeleteTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	headerToken := r.Header.Get("Auth")
+
+	if len(headerToken) == 0 {
+		log.Println("Token missing")
+		http.Error(w, "Token missing", http.StatusBadRequest)
+		return
+	}
+
+	// Extract & decode token
+	token, err := jwt.Parse(headerToken, func(token *jwt.Token) (interface{}, error) {
+		return secret, nil
+	})
+
+	if err != nil {
+		log.Println("Unable to decode token")
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+
+	if !ok || !token.Valid {
+		log.Println("Token invalid")
+		http.Error(w, "Token invalid", http.StatusForbidden)
+		return
+	}
+
+	isAdmin := int(claims["is_admin"].(float64)) == 1
+
+	if !isAdmin {
+		log.Println("Non admin attempt to delete item")
+		http.Error(w, "Unauthorized", http.StatusForbidden)
+		return
+	}
+
 	todosCollection := db.GetCollection(mongoConn, "todos")
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
