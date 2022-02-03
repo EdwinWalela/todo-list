@@ -33,7 +33,6 @@ func main() {
 	r.HandleFunc("/todos", routes.CreateTodo).Methods("POST")
 	r.HandleFunc("/todos", routes.GetTodos).Methods("GET")
 	r.HandleFunc("/todos", routes.GetTodos).Methods("GET").Queries("status", "{status}")
-	r.HandleFunc("/todos/{id}", routes.GetTodoById).Methods("GET")
 	r.HandleFunc("/todos", routes.UpdateTodo).Methods("PUT")
 	r.HandleFunc("/todos/{id}", routes.DeleteTodo).Methods("DELETE")
 	r.HandleFunc("/auth/register", routes.HandleRegister).Methods("POST")

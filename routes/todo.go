@@ -77,7 +77,7 @@ func GetTodos(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 
 	defer cancel()
-
+	log.Println(userId)
 	if filter {
 		if getCompleted { // get completed items
 			if !isAdmin {
@@ -133,43 +133,6 @@ func GetTodos(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(res)
-}
-
-func GetTodoById(w http.ResponseWriter, r *http.Request) {
-
-	// retrieve request params
-	vars := mux.Vars(r)
-
-	todoId, err := primitive.ObjectIDFromHex(vars["id"])
-
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	todoCollection := db.GetCollection(mongoConn, "todos")
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-
-	defer cancel()
-
-	var todo models.Todo
-
-	filter := bson.M{"_id": todoId}
-
-	findErr := todoCollection.FindOne(ctx, filter).Decode(&todo)
-
-	if findErr == mongo.ErrNoDocuments {
-		log.Println("record does not exist")
-		http.Error(w, "record does not exist", http.StatusNotFound)
-		return
-	} else if findErr != nil {
-		log.Println(findErr)
-		http.Error(w, findErr.Error(), http.StatusBadRequest)
-		return
-	}
-
-	json.NewEncoder(w).Encode(todo)
 }
 
 func CreateTodo(w http.ResponseWriter, r *http.Request) {
