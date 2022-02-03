@@ -68,11 +68,11 @@ func GetTodos(w http.ResponseWriter, r *http.Request) {
 
 	for cur.Next(ctx) {
 		var todo models.Todo
+
 		if err := cur.Decode(&todo); err != nil {
 			log.Println("unable to decode item")
 			log.Println(err)
 		}
-
 		todos = append(todos, todo)
 	}
 
@@ -163,11 +163,12 @@ func CreateTodo(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	todoCollection := db.GetCollection(mongoConn, "todos")
+
 	res, err := todoCollection.InsertOne(ctx, bson.D{
 		{"title", todo.Title},
 		{"timestamp", todo.Timestamp},
 		{"isComplete", false},
-		{"user_id:", claims["id"]},
+		{"user_id", claims["id"]},
 	})
 
 	if err != nil {

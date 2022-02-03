@@ -7,5 +7,5 @@ type Todo struct {
 	Title      string             `json:"title" bson:"title"`
 	Timestamp  int64              `json:"timestamp" bson:"timestamp"`
 	IsComplete bool               `json:"isComplete" bson:"isComplete"`
-	UserId     int64              `json:"userId" bson:"userId"`
+	UserId     int64              `json:"user_id" bson:"user_id"`
 }
