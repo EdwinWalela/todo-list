@@ -27,7 +27,6 @@ type TodosResponse struct {
 var mongoConn *mongo.Client = db.ConnectMongo()
 
 func GetTodos(w http.ResponseWriter, r *http.Request) {
-
 	headerToken := r.Header.Get("Auth")
 
 	if len(headerToken) == 0 {
