@@ -8,6 +8,10 @@
 
 - run `docker-compose up`
 
+- Vue App will run on `localhost`  (port 80)
+
+- API will run on `localhost:3000`
+
 ## Test Data
 
 ### User accounts
