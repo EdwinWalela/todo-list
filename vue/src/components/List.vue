@@ -1,9 +1,9 @@
 <template>
     <div>
-        <div id="todo-container" :key="todo.id" v-for="(todo,index) in todos" :class="todo.isComplete">
+        <div :class="[todo.isComplete ? 'complete':'']" id="todo-container" :key="todo.id" v-for="(todo,index) in todos" >
             
-            <h3 :class="todo.isComplete">{{ todo.title }}</h3>
-             <input id="check" type="checkbox"/>
+            <h3 >{{ todo.title }}</h3>
+             <input @click="$emit('update-item',index)" id="check" type="checkbox"/>
             <p>{{ 
                todo.timestamp
                 
@@ -26,9 +26,10 @@ export default {
 
 <style scoped>
     #todo-container{
-        background: gainsboro;
+        background: rgb(212, 212, 212);
         padding: 10px;
         margin:5px 0;
+         border-left: solid 4px transparent;
     }
 
     h3{
@@ -40,8 +41,8 @@ export default {
         font-size: 0.8em;;
     }
 
-    .true {
-        text-decoration: line-through;
+    .complete {
+       border-left: solid 4px rgb(0, 204, 0) !important;
 
     }
 

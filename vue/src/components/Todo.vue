@@ -14,7 +14,7 @@
         <List 
             :todos="todos"
             @delete-item="deleteItem"
-
+            @update-item="updateItem"
         />
         
     </div>
@@ -50,10 +50,11 @@ export default {
 
         deleteItem(index){
             this.todos.splice(index,1);
+        },
+
+        updateItem(index){
+            this.todos[index].isComplete  = ! this.todos[index].isComplete
         }
-
-
-
     },
     data(){
     return {
