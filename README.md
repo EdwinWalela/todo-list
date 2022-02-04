@@ -2,6 +2,8 @@
 
 [API Documentation](https://documenter.getpostman.com/view/4654837/UVeFNST4)
 
+Todo list application consisting of a Vue frontend and Golang backend
+
 ## Setup
 
 - Clone repo
