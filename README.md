@@ -1,6 +1,6 @@
 # Todo List Application
 
-[Documentation](https://documenter.getpostman.com/view/4654837/UVeFNST4)
+[API Documentation](https://documenter.getpostman.com/view/4654837/UVeFNST4)
 
 ## Setup
 
@@ -8,9 +8,9 @@
 
 - run `docker-compose up`
 
-- Vue App will run on `localhost`  (port 80)
+- Vue app will run on `localhost`  (port 80)
 
-- API will run on `localhost:3000`
+- Go API will run on `localhost:3000`
 
 ## Test Data
 
