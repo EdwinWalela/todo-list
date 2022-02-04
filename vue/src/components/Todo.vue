@@ -39,6 +39,14 @@ export default {
     methods: {
         async onSubmit(e){
             e.preventDefault();
+            if(this.form.title == ""){
+                alert("Task title required")
+                return
+            }
+            if(typeof this.form.date == "undefined"){
+                 alert("Date required")
+                return
+            }
 
             this.todos.push({
                 title:this.form.title,
@@ -85,7 +93,7 @@ export default {
     }
 
     #task-container{
-        border:solid 3px rgba(100, 148, 237,0.6);
+         box-shadow: 0px 1px 3px rgba(0, 60, 255, 0.5);
         width: 50%;
         max-width: 400px;
         margin: 2em auto;
