@@ -4,12 +4,13 @@
             
             <h3 >{{ todo.title }}</h3>
              <input @click="$emit('update-item',index)" id="check" type="checkbox"/>
-            <p>{{ 
+             <button @click="$emit('delete-item',index)">x</button>
+            <p>Due: {{ 
                todo.timestamp
                 
             }} </p>
             
-            <button @click="$emit('delete-item',index)">x</button>
+            
            
         </div>
     </div>
@@ -26,15 +27,15 @@ export default {
 
 <style scoped>
     #todo-container{
-        background: rgb(212, 212, 212);
-        padding: 10px;
-        margin:5px 0;
+        box-shadow: 0px 2px 3px rgba(0,0,0,0.3);
+        padding: 5px 10px;
+        margin:20px 0;
          border-left: solid 4px transparent;
     }
 
     h3{
         font-size: 0.9em;
-        width: 90%;
+        width: 81%;
         display: inline-block;
     }
     p{
@@ -46,12 +47,18 @@ export default {
 
     }
 
+    button{
+        display: inline-block;
+        
+        margin: 0em 1em;
+        position: relative;
+        bottom:5px
+    }
+
     button:nth-of-type(1){
         border:none;
         background: red;
         color: white;
-        display: block;
-        margin: 1em 0;
     }
      button:nth-of-type(2){
         border:none;
@@ -61,8 +68,8 @@ export default {
 
     #check{
         padding:10px;
-        height: 15px;
-        width: 15px;
+        height: 18px;
+        width: 18px;
     }
     
 </style>

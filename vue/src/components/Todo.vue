@@ -6,7 +6,7 @@
             <input type="task" v-model="form.title" placeholder="Task title"/>
             <br>
             <label for="">Day & Time</label>
-            <input type="date" v-model="form.date" placeholder="Due date">
+            <input  type="date" v-model="form.date" placeholder="Due date">
             <br>
             <input id="submit-btn" type="submit" value="Add Task">
         </form>
@@ -46,6 +46,7 @@ export default {
                 timestamp:this.form.date,
                 })
            
+           this.form.title = ""
         },
 
         deleteItem(index){
