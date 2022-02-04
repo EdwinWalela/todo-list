@@ -1,18 +1,20 @@
 <template>
     <div id="task-container">
         <h1>Todo Manager</h1>
-        <form @submit="onSubmit">
+        <form id="form" @submit="onSubmit">
             <label for="">Task</label>
-            <input type="task" placeholder="Task title"/>
+            <input type="task" v-model="form.title" placeholder="Task title"/>
             <br>
             <label for="">Day & Time</label>
-            <input type="date" placeholder="Due date">
+            <input type="date" v-model="form.date" placeholder="Due date">
             <br>
             <input id="submit-btn" type="submit" value="Add Task">
         </form>
 
         <List 
             :todos="todos"
+            @delete-item="deleteItem"
+
         />
         
     </div>
@@ -30,35 +32,39 @@ export default {
     created(){
         // Fetch 
         this.todos = [
-                {
-                title:"Wash clothes",
-                isComplete:false,
-                timestamp:164323043,
-                },
-                {
-                title:"Read book",
-                isComplete:true,
-                timestamp:164323043,
-                }
+               
             ]
     },
 
     methods: {
         async onSubmit(e){
             e.preventDefault();
+
             this.todos.push({
-                title:"Read book again",
+                title:this.form.title,
                 isComplete:false,
-                timestamp:164323043,
+                timestamp:this.form.date,
                 })
-            console.log("submited")
+           
+        },
+
+        deleteItem(index){
+            this.todos.splice(index,1);
         }
+
+
+
     },
     data(){
     return {
       todos:[
          
-      ]
+      ],
+      form:{
+          title:'',
+          timestamp:'',
+          isComplete:false,
+      }
      
     }
   },

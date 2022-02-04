@@ -1,15 +1,16 @@
 <template>
     <div>
-        <div id="todo-container" :key="todo.id" v-for="todo in todos" :class="todo.isComplete">
+        <div id="todo-container" :key="todo.id" v-for="(todo,index) in todos" :class="todo.isComplete">
             
             <h3 :class="todo.isComplete">{{ todo.title }}</h3>
+             <input id="check" type="checkbox"/>
             <p>{{ 
-                new Date(todo.timestamp *1000).toString().slice(0,16) 
+               todo.timestamp
                 
             }} </p>
             
-            <button>x</button>
-            <button>Complete</button>
+            <button @click="$emit('delete-item',index)">x</button>
+           
         </div>
     </div>
 </template>
@@ -19,7 +20,7 @@ export default {
     name:'List',
     props:{
         todos:Array
-    }
+    },
 }
 </script>
 
@@ -32,6 +33,8 @@ export default {
 
     h3{
         font-size: 0.9em;
+        width: 90%;
+        display: inline-block;
     }
     p{
         font-size: 0.8em;;
@@ -53,6 +56,12 @@ export default {
         border:none;
         background: green;
         color: white;
+    }
+
+    #check{
+        padding:10px;
+        height: 15px;
+        width: 15px;
     }
     
 </style>
