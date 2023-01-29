@@ -5,8 +5,35 @@ services:
   restart: always
   ports:
    - '3000:3000'
- vue:
-  build: ./vue
-  restart: always
+  environment:
+   - PG_DB_URL=${PG_DB_URL}
+   - MONGO_DB_URL=${MONGO_DB_URL}
+   - PORT=${PORT}
+  networks:
+    - todo
+ pgdb-todo:
+  image: postgres:latest
   ports:
-  - '80:8080'
+    - "5432:5432"
+  volumes:
+    - /pgdata/todo-api:/var/lib/postgresql/data/
+  environment:
+    - POSTGRES_USER=${PG_USER}
+    - POSTGRES_PASSWORD=${PG_PASSWORD}
+    - POSTGRES_DB=${PG_DB}
+  networks:
+    - todo
+ mongo-todo:
+  image: mongo:latest
+  container_name: mongo-todo
+  ports:
+    - 27017:27017
+  environment:
+    - MONGO_INITDB_DATABASE=${PG_DB}
+    - MONGO_INITDB_ROOT_USERNAME=${PG_USER}
+    - MONGO_INITDB_ROOT_PASSWORD=${PG_PASSWORD}
+  networks:
+    - todo
+networks:
+  todo:
+    driver: bridge

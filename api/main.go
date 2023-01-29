@@ -22,7 +22,7 @@ type DB struct {
 
 func main() {
 	godotenv.Load()
-	PORT, _ := strconv.Atoi(os.Getenv("PORT"))
+	PORT, _ := strconv.Atoi(os.Getenv("/PORT"))
 
 	URL := fmt.Sprintf("0.0.0.0:%d", PORT)
 
