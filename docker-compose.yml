@@ -13,8 +13,6 @@ services:
     - todo
  pgdb-todo:
   image: postgres:latest
-  ports:
-    - "5432:5432"
   volumes:
     - /pgdata/todo-api:/var/lib/postgresql/data/
   environment:
@@ -26,8 +24,6 @@ services:
  mongo-todo:
   image: mongo:latest
   container_name: mongo-todo
-  ports:
-    - 27017:27017
   environment:
     - MONGO_INITDB_DATABASE=${PG_DB}
     - MONGO_INITDB_ROOT_USERNAME=${PG_USER}
