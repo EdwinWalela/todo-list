@@ -4,6 +4,8 @@
 
 Todo list application consisting of a Vue frontend and Golang backend
 
+<img src="docs/todo.png"/>
+
 ## Setup
 
 - Clone repo
