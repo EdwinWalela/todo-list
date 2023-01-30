@@ -4,7 +4,7 @@
 
 Todo list application consisting of a Vue frontend and Golang backend
 
-<img width=400 src="docs/todo.png"/>
+<img width=300 src="docs/todo.png"/>
 
 ## Setup
 
